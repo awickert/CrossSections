@@ -24,19 +24,26 @@ allData = {}
 file_name = sys.argv[1]
 wb = openpyxl.load_workbook(file_name, data_only=True)
 for sheet in wb:
-  xcol = 0
-  ycol = 1
-  zcol = 2
-  distcol = 3
-  x = values_in_column(sheet, xcol, 1)
-  y = values_in_column(sheet, ycol, 1)
-  z = values_in_column(sheet, zcol, 1)
   try:
-    dist = values_in_column(sheet, distcol, 1).astype(float)
+    xcol = 0
+    ycol = 1
+    zcol = 2
+    distcol = 3
+    x = values_in_column(sheet, xcol, 1)
+    y = values_in_column(sheet, ycol, 1)
+    z = values_in_column(sheet, zcol, 1)
+    try:
+      dist = values_in_column(sheet, distcol, 1).astype(float)
+    except:
+        dist = ( (x-x[0])**2 + (y - y[0])**2 )**0.5
+    #allData.append(np.array([dist,x,y,z]))
+    allData[sheet.title] = {'dist':dist, 'e':x, 'n':y, 'z':z}
   except:
-    dist = ( (x-x[0])**2 + (y - y[0])**2 )**0.5
-  #allData.append(np.array([dist,x,y,z]))
-  allData[sheet.title] = {'dist':dist, 'e':x, 'n':y, 'z':z}
+    distcol = 0
+    zcol = 1
+    dist = values_in_column(sheet, distcol, 1).astype(float)
+    z = values_in_column(sheet, zcol, 1)
+    allData[sheet.title] = {'dist':dist, 'z':z}
 
 # Distance range
 dist_all = []
